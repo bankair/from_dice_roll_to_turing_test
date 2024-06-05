@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+LETTERS =
+  'EAISNR TOLU.DCMPVGBFQHJXYZKW'
+  .chars
+  .each_with_index.map { |c, i| c * (28 - i) }
+  .join
+  .chars
+
+puts(200.times.map { LETTERS.sample }.join.capitalize)
