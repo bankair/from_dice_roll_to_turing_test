@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'active_support'
+
+def letters_by_decreasing_frequency(buffer)
+  I18n.transliterate(buffer)  # "L'été," => "L'ete,"
+      .upcase                 # "L'ete," => "L'ETE,"
+      .chars                  # "L'ETE" => ["L", "'", "E", "T", "E", ","]
+      .grep(/[A-Z]/)          # ["L", "'", "E", "T", "E", ","] => ["L", "E", "T", "E"]
+      .tally                  # ["L", "E", "T", "E"] => { "L" => 1, "E" => 2, "T" => 1 }
+      .sort_by(&:last)        # { "L" => 1, "E" => 2, "T" => 1 } => [["L", 1], ["T", 1], ["E", 2]]
+      .reverse                # [["L", 1], ["T", 1], ["E", 2]] => [["E", 2], ["L", 1], ["T", 1]]
+      .map(&:first)           # [["E", 2], ["L", 1], ["T", 1]] => ["E", "L", "T"]
+      .join                   # ["E", "L", "T"] => "ELT"
+end
+
+require 'rubygems/text'
+
+RefFrequency = Data.define(:reference, :language) do
+  include Gem::Text
+
+  def distance_from(frequency)
+    levenshtein_distance(reference, frequency)
+  end
+end
+
+REF_FREQUENCIES = [
+  RefFrequency.new(reference: 'ETAOINSHRDLCUMWFGYPBVKJXQZ', language: :english),
+  RefFrequency.new(reference: 'ENISRATDHULCGMOBWFKZVPJYXQ', language: :german),
+  RefFrequency.new(reference: 'EAISNRTOLUDCMPVGBFQHJXYZKW', language: :french)
+].freeze
+
+frequency = letters_by_decreasing_frequency(ARGF.each_line.to_a.join)
+
+sorted_references = REF_FREQUENCIES.sort_by { |reference| reference.distance_from(frequency) }
+
+puts "Text is most likely in #{sorted_references.first.language}"
