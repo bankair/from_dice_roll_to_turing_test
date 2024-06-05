@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require_relative './char'
 
 # Markov chain wrapper class
 class Markov
@@ -31,15 +30,14 @@ class Markov
       end
     end
 
-    def sample(previous_index)
-      hit_map(previous_index).sample
+    def sample(previous)
+      hit_map(previous).sample
     end
 
     def run(size, split_strategy)
-      result = [hits.keys.sample]
+      result = Array(hits.flat_map { |k, v| [k] * v.values.sum }.sample)
       loop do
-        current = sample(split_strategy.last(result))
-        result << current
+        result << sample(split_strategy.last(result))
         break if result.size >= size
       end
       result
@@ -62,14 +60,14 @@ class Markov
         .upcase
         .gsub(/[ \r\n]+/, ' ')
         .chars
-      split_strategy.iterate_over(chars) do |char|
+      split_strategy.iterate_over(chars) do |element|
         unless previous
-          previous = char
+          previous = element
           next
         end
 
-        markov_chain[previous][char] += 1
-        previous = char
+        markov_chain[previous][split_strategy.extract(element)] += 1
+        previous = element
       end
       markov_chain
     end

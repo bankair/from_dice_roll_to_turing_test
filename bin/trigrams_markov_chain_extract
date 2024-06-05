@@ -3,9 +3,9 @@
 # frozen_string_literal: true
 
 require 'active_support'
+require_relative '../lib/trigram'
 require_relative '../lib/markov_chain'
-require_relative '../lib/char'
 
-markov_chain = Markov::Chain.extract(ARGF.each_line.to_a.join, Char)
+markov_chain = Markov::Chain.extract(ARGF.each_line.to_a.join, Trigram)
 
 puts markov_chain.to_yaml
