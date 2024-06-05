@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'active_support'
+require_relative '../lib/char'
+require_relative '../lib/markov_chain'
+
+markov_chain = Markov::Chain.extract(ARGF.each_line.to_a.join, Char)
+
+result = markov_chain.run(ENV.fetch('SIZE', 200).to_i, Char)
+
+puts result.join.capitalize

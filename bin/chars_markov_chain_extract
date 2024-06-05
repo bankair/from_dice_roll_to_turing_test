@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'active_support'
+require_relative '../lib/markov_chain'
+
+markov_chain = Markov::Chain.extract(ARGF.each_line.to_a.join, Char)
+
+puts markov_chain.to_yaml
