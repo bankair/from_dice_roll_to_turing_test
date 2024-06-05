@@ -3,3 +3,5 @@
 source 'https://rubygems.org'
 
 gem "activesupport", "~> 7.1"
+
+gem "marky_markov", "~> 0.3.5"

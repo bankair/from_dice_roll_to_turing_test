@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'marky_markov'
+markov = MarkyMarkov::TemporaryDictionary.new(5)
+markov.parse_string(ARGF.each_line.to_a.join)
+puts markov.generate_n_sentences(3)
