@@ -4,28 +4,21 @@ require 'yaml'
 
 # Markov chain wrapper class
 class Markov
-  class Node
-  end
-
   class Chain
     attr_reader :hits
 
-    def initialize(hash = Hash.new { |h, k| h[k] = Hash.new(0) })
+    def initialize(hash: Hash.new { |h, k| h[k] = Hash.new(0) })
       @hits = hash
-    end
-
-    def [](index)
-      hits[index]
     end
 
     def hit_maps
       @hit_maps ||= {}
     end
 
-    def hit_map(index)
-      hit_maps.fetch(index) do
-        hit_maps[index] =
-          hits[index]
+    def hit_map(element)
+      hit_maps.fetch(element) do
+        hit_maps[element] =
+          hits[element]
           .flat_map { |value, count| [value] * count }
       end
     end
@@ -38,17 +31,8 @@ class Markov
       result = Array(hits.flat_map { |k, v| [k] * v.values.sum }.sample)
       loop do
         result << sample(split_strategy.last(result))
-        break if result.size >= size
+        return result if result.size >= size
       end
-      result
-    end
-
-    def to_yaml
-      hits.to_yaml
-    end
-
-    def self.load(buffer)
-      new(YAML.load(buffer))
     end
 
     def self.extract(buffer, split_strategy)
@@ -66,10 +50,18 @@ class Markov
           next
         end
 
-        markov_chain[previous][split_strategy.extract(element)] += 1
+        markov_chain.hits[previous][split_strategy.extract(element)] += 1
         previous = element
       end
       markov_chain
+    end
+
+    def to_yaml
+      hits.to_yaml
+    end
+
+    def self.load(buffer)
+      new(YAML.load(buffer))
     end
   end
 end
