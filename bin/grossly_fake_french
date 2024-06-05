@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+puts(
+  'EAISNRTOLUDCMPVGBFQHJXYZKW'
+  .chars
+  .each_with_index.map { |c, i| c * (26 - i) }
+)
